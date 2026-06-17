@@ -14,13 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Migrado desde ValleDelSol.demo.controller.AdminController.
- * Cambios:
- *  - Package actualizado a valledelsol.user
- *  - Agrego GET /usuarios para que el BFF pueda listar usuarios
- *  - La lógica de negocio (cambiarRol) es idéntica al monolito
- */
 @RestController
 public class AdminController {
 
@@ -37,7 +30,7 @@ public class AdminController {
         return ResponseEntity.ok(usuarios);
     }
 
-    // Cambiar rol de un usuario — idéntico al monolito
+    // Cambiar rol de un usuario
     @PutMapping("/admin/usuarios/{id}/rol")
     public ResponseEntity<UserResponseDTO> cambiarRol(
             @PathVariable Long id,
@@ -74,6 +67,15 @@ public class AdminController {
         );
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Perfil creado");
+    }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     public record RegistroRequest(String nombre, String email, String password) {}
